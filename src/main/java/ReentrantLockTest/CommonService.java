@@ -15,36 +15,38 @@ public class CommonService {
     public void printA() {
         try {
             lock.lock();
-            while (true){
-                if (showA) {
-                    System.out.println("打印-- A --");
-                    showA = false;
-                    condition.signalAll();
+            while (true) {
+                if (!showA) {
+                    //执行await()方法后会自动释放锁
                     condition.await();
                 }
+                System.out.println("打印-- A --");
+                showA = false;
+                condition.signalAll();
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             lock.unlock();
 
         }
     }
 
-    public void printB(){
+    public void printB() {
         try {
             lock.lock();
-            while (true){
-                if (!showA) {
-                    System.out.println("打印-- B --");
-                    showA = true;
-                    condition.signalAll();
+            while (true) {
+                if (showA) {
                     condition.await();
                 }
+                System.out.println("打印-- B --");
+                showA = true;
+                condition.signalAll();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             lock.unlock();
         }
     }
